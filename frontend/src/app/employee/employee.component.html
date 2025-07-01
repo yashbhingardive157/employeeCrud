@@ -1,0 +1,140 @@
+<div class="employee-container">
+  <!-- Navigation buttons -->
+  <div class="nav-buttons">
+    <button 
+      type="button" 
+      class="nav-btn" 
+      [class.active]="currentView === 'form'"
+      (click)="showForm()">
+      {{ editMode ? 'Edit Employee' : 'Add Employee' }}
+    </button>
+    <button 
+      type="button" 
+      class="nav-btn" 
+      [class.active]="currentView === 'list'"
+      (click)="showEmployeeList()">
+      Show Employees
+    </button>
+  </div>
+
+  <!-- Form View -->
+  <div *ngIf="currentView === 'form'" class="form-container">
+    <h2>{{ editMode ? 'Edit Employee' : 'Employee Details' }}</h2>
+    <form [formGroup]="form" (ngSubmit)="submitForm()">
+      <div class="form-row">
+        <div class="input-group">
+          <p>Employee Name</p>
+          <input 
+            type="text" 
+            formControlName="name" 
+            placeholder="Name" 
+            [class.error]="isFieldInvalid('name')"
+            required>
+          <div class="error-message" *ngIf="isFieldInvalid('name')">
+            {{ getFieldError('name') }}
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <p>Department</p>
+          <select 
+            formControlName="department"
+            [class.error]="isFieldInvalid('department')">
+            <option value="">Select Department</option>
+            <option value="HR">HR</option>
+            <option value="IT">IT</option>
+            <option value="Sales">Sales</option>
+          </select>
+          <div class="error-message" *ngIf="isFieldInvalid('department')">
+            {{ getFieldError('department') }}
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="input-group">
+          <p>Email ID</p>
+          <input 
+            type="email" 
+            formControlName="email" 
+            placeholder="Email" 
+            [class.error]="isFieldInvalid('email')"
+            required>
+          <div class="error-message" *ngIf="isFieldInvalid('email')">
+            {{ getFieldError('email') }}
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <p>Date of Joining</p>
+          <input 
+            type="date" 
+            formControlName="joining_date" 
+            [class.error]="isFieldInvalid('joining_date')"
+            placeholder="dd-mm-yyyy">
+          <div class="error-message" *ngIf="isFieldInvalid('joining_date')">
+            {{ getFieldError('joining_date') }}
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="is_remote"> Remote Worker
+        </label>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="submit-btn" [disabled]="form.invalid && form.touched">
+          {{ editMode ? 'Update Employee' : 'Add Employee' }}
+        </button>
+        <button type="button" class="reset-btn" (click)="resetForm()">Reset</button>
+        <button type="button" class="cancel-btn" (click)="cancelEdit()" *ngIf="editMode">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Employee List View -->
+  <div *ngIf="currentView === 'list'" class="list-container">
+    <div class="list-header">
+      <h2>Employee List</h2>
+      <button type="button" class="add-new-btn" (click)="addNewEmployee()">Add New Employee</button>
+    </div>
+    
+    <div class="table-container" *ngIf="employees.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Email</th>
+            <th>Joining Date</th>
+            <th>Remote</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let emp of employees">
+            <td>{{ emp.name }}</td>
+            <td>{{ emp.department }}</td>
+            <td>{{ emp.email }}</td>
+            <td>{{ emp.joining_date | date: 'dd/MM/yyyy'}}</td>
+            <td>
+              <span class="remote-badge" [class.remote-yes]="emp.is_remote" [class.remote-no]="!emp.is_remote">
+                {{ emp.is_remote ? 'Yes' : 'No' }}
+              </span>
+            </td>
+            <td class="actions">
+              <button class="edit-btn" (click)="edit(emp)">Edit</button>
+              <button class="delete-btn" (click)="delete(emp.id!)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="no-employees" *ngIf="employees.length === 0">
+      <p>No employees found. <a href="#" (click)="addNewEmployee()">Add the first employee</a></p>
+    </div>
+  </div>
+</div>
